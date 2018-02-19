@@ -1,0 +1,25 @@
+{
+  "name": "webtorrent-bridge",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node server",
+    "test": "jest"
+  },
+  "author": "Michael theodorides <mc.theodorides@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^0.17.1",
+    "body-parser": "^1.18.2",
+    "cors": "^2.8.4",
+    "express": "^4.16.2",
+    "jest": "^22.3.0",
+    "morgan": "^1.9.0",
+    "mz": "^2.7.0",
+    "pm2": "^2.9.3",
+    "puppeteer": "^1.0.0",
+    "rotating-file-stream": "^1.3.4",
+    "webtorrent": "^0.98.21"
+  }
+}
