@@ -1,0 +1,48 @@
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+
+    <title>🍿 Movie Time</title>
+    <script src="https://unpkg.com/jquery@3.3.1/dist/jquery.js"></script>
+    <script src="https://unpkg.com/axios@0.17.1/dist/axios.js"></script>
+
+    <style type="text/css">
+        body {
+            font-family: monospace;
+        }
+
+        .url:hover {
+            text-decoration: underline;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+<video autoplay src="" height="360px" controls></video>
+</body>
+
+<script>
+
+  $(() => load())
+  $('#load').on('click', load)
+
+  async function load () {
+    let response, magnet = 'magnet:?xt=urn:btih:B35CBB10B3D10A4AD71797FC1EA925F78DF38367'
+
+    response = await axios.post('http://localhost:3000/api/magnet', {magnet})
+    let hash = response.data.hash
+    console.log('added torrent', hash)
+
+    response = await axios.get('http://localhost:3000/api/files?hash=' + hash)
+    let file = response.data.files.find(file => file.match(/\.mp4$/i))
+    console.log('got file', file)
+
+    $('video').attr('src', `http://localhost:3000/api/file?hash=${hash}&name=${file}`)
+  }
+</script>
+
+</html>

@@ -9,8 +9,10 @@ const fs = require('fs')
 const index = require('./routes/index')
 
 const app = express()
-const logDirectory = path.join(__dirname, 'logs')
 
+app.disable('x-powered-by')
+
+const logDirectory = path.join(__dirname, 'logs')
 if (!fs.existsSync(logDirectory)) {
   fs.mkdirSync(logDirectory)
 }
@@ -20,11 +22,9 @@ const isDev = process.env.NODE_ENV !== 'production'
 const logStream = rotatingFlleStream('server.log', {interval: '1d', path: logDirectory})
 
 app.use(morgan(isDev ? 'dev' : 'short', {stream: logStream}))
-
 app.use(cors())
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({extended: true}))
-app.disable('x-powered-by')
 
 app.use('/', index)
 

@@ -1,5 +1,5 @@
 {
-  "name": "webtorrent-bridge",
+  "name": "metadotis",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -7,7 +7,7 @@
     "start": "node server",
     "test": "jest"
   },
-  "author": "Michael theodorides <mc.theodorides@gmail.com>",
+  "author": "Michael Theodorides <mc.theodorides@gmail.com>, Petros Kyriakou<>",
   "license": "MIT",
   "dependencies": {
     "axios": "^0.17.1",
