@@ -1,7 +1,7 @@
 # metadotis
 
 ## Run the server
-```pm2 restart pm2.dev.config.js```
+```npm start```
 
 ## To test
 ```npm test```
