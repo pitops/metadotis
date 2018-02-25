@@ -8,6 +8,7 @@ import Grid from 'material-ui/es/Grid/Grid';
 import { Send } from 'material-ui-icons';
 import IconButton from 'material-ui/es/IconButton/IconButton';
 import * as axios from 'axios';
+import Navbar from '../navbar/Navbar';
 
 class Dashboard extends Component {
   state = {
@@ -23,7 +24,7 @@ class Dashboard extends Component {
     const hash = await this.getMagnetHash();
     // const hash = '92b4d5ea2d21bc2692a2cb1e5b9fbecd489863ec'
     const files = await this.getFiles(hash);
-    const filename = files.find(file => file.includes('.mp4'));
+    const filename = files.find(file => file.toLowerCase().includes('.mp4'));
     this.setState({
       videoSrc: `/api/file?hash=${hash}&name=${filename}`
     });
@@ -52,6 +53,7 @@ class Dashboard extends Component {
   render() {
     return (
       <React.Fragment>
+        <Navbar />
         <Grid container justify="center" spacing={24}>
           <Grid item sm={6}>
             <FormControl fullWidth>

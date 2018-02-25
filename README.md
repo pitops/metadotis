@@ -3,6 +3,8 @@
 enter description
 
 ### Setup
+
+First you need to have NodeJS v8+ installed and PM2 installed globally by running `npm install -g pm2`
 ```npm setup```
 
 ### Run the server
@@ -10,6 +12,10 @@ enter description
 
 ### To test
 ```npm test```
+
+### Note
+
+Only .mp4 files are supported at the moment
 
 ### API
 
