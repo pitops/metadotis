@@ -1,12 +1,17 @@
 # metadotis
 
-## Run the server
+enter description
+
+### Setup
+```npm setup```
+
+### Run the server
 ```npm start```
 
-## To test
+### To test
 ```npm test```
 
-## API
+### API
 
 ```
 POST /api/magnet

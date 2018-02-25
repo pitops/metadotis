@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "pm2 restart pm2.dev.config.js",
+    "setup": "./setup.sh",
     "test": "jest"
   },
   "author": "Michael Theodorides <mc.theodorides@gmail.com>, Petros Kyriakou<9pitops@gmail.com>",
