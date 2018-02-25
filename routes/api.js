@@ -13,7 +13,7 @@ router.post('/magnet', async (req, res, next) => {
     hash = await bridge.addTorrent(magnet)
   } catch (e) {
     e.code = 1
-    e.descreption = 'could not get magnet, maybe dead or not exist'
+    e.description = 'could not get magnet, maybe torrent is dead or does not exist'
     return next(e)
   }
 
@@ -28,7 +28,7 @@ router.get('/files', (req, res, next) => {
     files = bridge.getFiles(hash)
   } catch (e) {
     e.code = 2
-    e.descreption = 'could not get files'
+    e.description = 'could not get files'
     return next(e)
   }
 
@@ -45,7 +45,7 @@ router.get('/file', (req, res, next) => {
     file = bridge.getFile(hash, name)
   } catch (e) {
     e.code = 2
-    e.descreption = 'could not get files'
+    e.description = 'could not get files'
     return next(e)
   }
 
