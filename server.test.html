@@ -31,7 +31,7 @@
   $('#load').on('click', load)
 
   async function load () {
-    let response, magnet = 'magnet:?xt=urn:btih:B35CBB10B3D10A4AD71797FC1EA925F78DF38367'
+    let response, magnet = 'B35CBB10B3D10A4AD71797FC1EA925F78DF38367'
 
     response = await axios.post('http://localhost:3000/api/magnet', {magnet})
     let hash = response.data.hash

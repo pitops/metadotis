@@ -1,9 +1,16 @@
+const mime = require('mime')
 const express = require('express')
 const bridge = require('../lib/bridge')
 
 let router = express.Router()
 
 router.get('/', (req, res) => res.json({message: 'API'}))
+
+router.get('/status/', (req, res, next) => {
+  let status = bridge.getStatus()
+  console.log({status})
+  res.json(status)
+})
 
 router.post('/magnet', async (req, res, next) => {
   let magnet = req.body.magnet
@@ -20,56 +27,64 @@ router.post('/magnet', async (req, res, next) => {
   res.json({hash: hash})
 })
 
-router.get('/files', (req, res, next) => {
-  let hash = req.query.hash
-  let files
+router.get('/torrent/:hash', (req, res, next) => {
+  let hash = req.params.hash
+  let torrent
 
   try {
-    files = bridge.getFiles(hash)
+    torrent = bridge.getTorrent(hash)
   } catch (e) {
     e.code = 2
     e.description = 'could not get files'
     return next(e)
   }
 
-  res.json({files: files.map(file => file.name)})
+  res.json(torrent)
 })
 
-router.get('/file', (req, res, next) => {
-  let hash = req.query.hash
-  let name = req.query.name
+router.get('/torrent/:hash/:fileid', (req, res, next) => {
+  let hash = req.params.hash
+  let fileid = req.params.fileid
+
   let range = req.headers.range
+
+  console.log({hash, fileid, range})
 
   let file
   try {
-    file = bridge.getFile(hash, name)
+    file = bridge.getFile(hash, fileid)
   } catch (e) {
     e.code = 2
     e.description = 'could not get files'
     return next(e)
   }
 
-  let fileLength = file.length
-  let start = 0
-  let end = fileLength - 1
+  let stream, fileLength = file.length
+  let contentType = mime.getType(file.name.split('.').pop())
+  let head = {'Content-Type': contentType}
 
   if (range) {
-    let positions = range.replace(/bytes=/, '').split('-')
-    start = parseInt(positions[0], 10)
-    end = positions[1] ? Math.min(parseInt(positions[1], 10), fileLength - 1) : fileLength - 1
+    let parts = range.replace(/bytes=/i, '').split('-')
+    let start = parseInt(parts[0], 10)
+    let end = fileLength - 1
+    if (parts[1]) {
+      end = Math.min(parseInt(parts[1], 10), end)
+    }
+    let chunkSize = end - start + 1
+
+    head['Accept-Ranges'] = 'bytes'
+    head['Content-Range'] = 'bytes ' + start + '-' + end + '/' + fileLength
+    head['Content-Length'] = chunkSize
+
+    res.writeHead(206, head)
+
+    stream = file.createReadStream({start, end})
+  } else {
+    head['Content-Length'] = fileLength
+    res.writeHead(200, head)
+    stream = file.createReadStream()
   }
 
-  let stream = file.createReadStream({start, end})
-  let chunkSize = (end - start) + 1
-
-  let head = {
-    'Content-Range': 'bytes ' + start + '-' + end + '/' + fileLength,
-    'Accept-Ranges': 'bytes',
-    'Content-Length': chunkSize,
-    'Content-Type': 'video/mp4'
-  }
-
-  res.writeHead(206, head)
   stream.pipe(res)
   stream.on('error', e => next(e))
 })

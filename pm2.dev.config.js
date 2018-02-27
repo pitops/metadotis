@@ -8,7 +8,7 @@ const IGNORE = [
 module.exports = {
   apps: [
     {
-      name: 'bridge',
+      name: 'server',
       script: 'server.js',
       watch: ['lib', 'routes'],
       ignore_watch: IGNORE,
