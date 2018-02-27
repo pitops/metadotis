@@ -24,15 +24,17 @@ class Dashboard extends Component {
     const hash = await this.getMagnetHash();
     // const hash = '92b4d5ea2d21bc2692a2cb1e5b9fbecd489863ec'
     const files = await this.getFiles(hash);
-    const filename = files.find(file => file.toLowerCase().includes('.mp4'));
+    const filename = files.find(file =>
+      file.name.toLowerCase().includes('.mp4')
+    );
     this.setState({
-      videoSrc: `/api/file?hash=${hash}&name=${filename}`
+      videoSrc: `/api/torrent/${hash}/${filename.id}`
     });
   };
 
   async getMagnetHash() {
     try {
-      const response = await axios.post('/api/magnet', {
+      const response = await axios.post('/api/torrent', {
         magnet: this.state.magnetLink
       });
       return response.data.hash;
@@ -43,7 +45,7 @@ class Dashboard extends Component {
 
   async getFiles(hash) {
     try {
-      const response = await axios.get(`/api/files?hash=${hash}`);
+      const response = await axios.get(`/api/torrent/${hash}`);
       return response.data.files;
     } catch (err) {
       console.log('getFiles', err);
