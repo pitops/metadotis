@@ -1,10 +1,22 @@
 const mime = require('mime')
-const express = require('express')
+const imdb = require('../lib/imdb')
 const bridge = require('../lib/bridge')
+const express = require('express')
 
 let router = express.Router()
 
 router.get('/', (req, res) => res.json({message: 'API'}))
+
+router.get('/movies/popular', async (req, res) => {
+  let movies = await imdb.popular()
+  res.json({movies})
+})
+
+router.get('/movies/search', async (req, res) => {
+  let q = req.query.q
+  let movies = await imdb.search(q)
+  res.json({movies})
+})
 
 router.get('/status/', (req, res, next) => {
   let status = bridge.getStatus()

@@ -12,6 +12,16 @@ describe('api', () => {
     done()
   }, 5 * 1000)
 
+  test('get most popular movies', async () => {
+    let response = await axios.get('http://localhost:3333/api/movies/popular')
+    expect(response.data.movies.length).toEqual(100)
+  }, 10 * 1000)
+
+  test('search movies', async () => {
+    let response = await axios.get('http://localhost:3333/api/movies/search?q=robot')
+    expect(response.data.movies.length).toEqual(50)
+  }, 10 * 1000)
+
   test('get status', async () => {
     let response = await axios.get('http://localhost:3333/api/status/')
 

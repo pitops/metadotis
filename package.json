@@ -13,6 +13,7 @@
   "dependencies": {
     "axios": "^0.17.1",
     "body-parser": "^1.18.2",
+    "cheerio": "^1.0.0-rc.2",
     "cors": "^2.8.4",
     "express": "^4.16.2",
     "fs-chunk-store": "^1.6.5",
@@ -22,6 +23,8 @@
     "mz": "^2.7.0",
     "pm2": "^2.9.3",
     "puppeteer": "^1.0.0",
+    "request": "^2.83.0",
+    "request-promise-native": "^1.0.5",
     "rotating-file-stream": "^1.3.4",
     "uuid": "^3.2.1",
     "webtorrent": "^0.98.21"
