@@ -2,6 +2,7 @@ const mime = require('mime')
 const imdb = require('../lib/imdb')
 const bridge = require('../lib/bridge')
 const express = require('express')
+const thirteen = require('../lib/1337x')
 
 let router = express.Router()
 
@@ -12,10 +13,18 @@ router.get('/movies/popular', async (req, res) => {
   res.json({movies})
 })
 
-router.get('/movies/search', async (req, res) => {
+router.get('/search/movies', async (req, res) => {
   let q = req.query.q
   let movies = await imdb.search(q)
   res.json({movies})
+})
+
+router.get('/search/torrents', async (req, res) => {
+  let q = req.query.q
+  let page = req.query.page
+  let result = await thirteen.search(q, page)
+
+  res.json(result)
 })
 
 router.get('/status/', (req, res, next) => {
@@ -73,7 +82,7 @@ router.get('/torrent/:hash/:fileid', (req, res, next) => {
 
   let stream, fileLength = file.length
   let contentType = mime.getType(file.name.split('.').pop())
-  let head = {'Content-Type': contentType}
+  let head = {'Content-Type': contentType, 'Accept-Ranges': 'bytes'}
 
   if (range) {
     let parts = range.replace(/bytes=/i, '').split('-')
@@ -84,18 +93,18 @@ router.get('/torrent/:hash/:fileid', (req, res, next) => {
     }
     let chunkSize = end - start + 1
 
-    head['Accept-Ranges'] = 'bytes'
     head['Content-Range'] = 'bytes ' + start + '-' + end + '/' + fileLength
     head['Content-Length'] = chunkSize
 
     res.writeHead(206, head)
-
     stream = file.createReadStream({start, end})
+
   } else {
     head['Content-Length'] = fileLength
     res.writeHead(200, head)
     stream = file.createReadStream()
   }
+  console.log(head)
 
   stream.pipe(res)
   stream.on('error', e => next(e))

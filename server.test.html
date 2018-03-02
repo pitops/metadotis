@@ -33,15 +33,15 @@
   async function load () {
     let response, magnet = 'B35CBB10B3D10A4AD71797FC1EA925F78DF38367'
 
-    response = await axios.post('http://localhost:3000/api/magnet', {magnet})
+    response = await axios.post('http://localhost:3333/api/magnet', {magnet})
     let hash = response.data.hash
     console.log('added torrent', hash)
 
-    response = await axios.get('http://localhost:3000/api/files?hash=' + hash)
-    let file = response.data.files.find(file => file.match(/\.mp4$/i))
+    response = await axios.get('http://localhost:3333/api/torrent/' + hash)
+    let file = response.data.files.find(file => file.name.match(/\.mp4$/i))
     console.log('got file', file)
 
-    $('video').attr('src', `http://localhost:3000/api/file?hash=${hash}&name=${file}`)
+    $('video').attr('src', `http://localhost:3333/api/torrent/${hash}/${file.id}`)
   }
 </script>
 

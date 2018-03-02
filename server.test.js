@@ -18,8 +18,13 @@ describe('api', () => {
   }, 10 * 1000)
 
   test('search movies', async () => {
-    let response = await axios.get('http://localhost:3333/api/movies/search?q=robot')
+    let response = await axios.get('http://localhost:3333/api/search/movies?q=robot')
     expect(response.data.movies.length).toEqual(50)
+  }, 10 * 1000)
+
+  test('search torrent', async () => {
+    let response = await axios.get('http://localhost:3333/api/search/torrents?q=robot&page=1')
+    expect(response.data.movies.length > 1).toBeTruthy()
   }, 10 * 1000)
 
   test('get status', async () => {
@@ -67,12 +72,12 @@ describe('api', () => {
     expect(response.data).toBeDefined()
   })
 
-  test('get file with range', async () => {
+  test.skip('get file with range', async () => {
     let hash = 'B35CBB10B3D10A4AD71797FC1EA925F78DF38367'
     let response = await axios.get('http://localhost:3333/api/torrent/' + hash)
 
     let file = response.data.files.shift()
-    response = await axios.get(`http://localhost:3333/api/torrent/${hash}/${file.id}`, {headers: {'Range': 'Bytes=1000-'}})
+    response = await axios.get(`http://localhost:3333/api/torrent/${hash}/${file.id}`, {headers: {'Range': 'bytes=100-'}})
 
     expect(response.status).toEqual(206)
     expect(response.data).toBeDefined()
