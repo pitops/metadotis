@@ -5,7 +5,7 @@ import AppBar from 'material-ui/AppBar';
 import Toolbar from 'material-ui/Toolbar';
 import Typography from 'material-ui/Typography';
 import IconButton from 'material-ui/IconButton';
-import { ArrowDownward, ArrowUpward, FileDownload } from 'material-ui-icons';
+import { FileDownload } from 'material-ui-icons';
 import Tooltip from 'material-ui/es/Tooltip/Tooltip';
 import { Manager, Target, Popper } from 'react-popper';
 import Grow from 'material-ui/es/transitions/Grow';
@@ -13,8 +13,9 @@ import Paper from 'material-ui/es/Paper/Paper';
 import MenuList from 'material-ui/Menu/MenuList';
 import ClickAwayListener from 'material-ui/es/utils/ClickAwayListener';
 import classNames from 'classnames';
-import * as axios from 'axios';
-import GlobalSpeed from './GlobalSpeed';
+import TorrentStatus from './TorrentStatus';
+import BandWidthStatus from '../shared/BandWidthStatus';
+import * as axios from 'axios/index';
 
 const styles = theme => ({
   root: {
@@ -43,11 +44,29 @@ const styles = theme => ({
 
 class Navbar extends React.Component {
   state = {
-    open: false
+    open: false,
+    uploadSpeed: '0.00 Kb/s',
+    downloadSpeed: '0.00 Kb/s'
   };
+
+  componentWillMount() {
+    setInterval(() => {
+      (async () => {
+        const status = await this.getGlobalStatus();
+        this.setState({
+          uploadSpeed: status.data.upload,
+          downloadSpeed: status.data.download
+        });
+      })();
+    }, 10000);
+  }
 
   componentWillUnmount() {
     clearTimeout(this.timeout);
+  }
+
+  getGlobalStatus() {
+    return axios.get('api/status');
   }
 
   handleClick = () => {
@@ -81,7 +100,10 @@ class Navbar extends React.Component {
               Webflix
             </Typography>
 
-            <GlobalSpeed />
+            <BandWidthStatus
+              downloadSpeed={this.state.downloadSpeed}
+              uploadSpeed={this.state.uploadSpeed}
+            />
 
             <Manager>
               <Target>
@@ -112,12 +134,16 @@ class Navbar extends React.Component {
                     style={{ transformOrigin: '0 0 0' }}
                   >
                     <Paper style={{ width: '350px', padding: '15px' }}>
+                      <Typography variant="subheading">
+                        Downloads (1)
+                      </Typography>
                       <MenuList role="menu">
                         {/*<MenuItem onClick={this.handleClose}>Profile</MenuItem>*/}
                         {/*<MenuItem onClick={this.handleClose}>My account</MenuItem>*/}
                         {/*<MenuItem onClick={this.handleClose}>Logout</MenuItem>*/}
                       </MenuList>
-                      No downloads active
+                      {/*No downloads active*/}
+                      <TorrentStatus />
                     </Paper>
                   </Grow>
                 </ClickAwayListener>

@@ -16,12 +16,17 @@ class Dashboard extends Component {
     videoSrc: undefined
   };
 
+  componentWillMount() {
+    const res = axios.get('api/search/movies?q=robot');
+  }
+
   handleChange = prop => event => {
     this.setState({ [prop]: event.target.value });
   };
 
   handleMagnetLinkDispatch = async () => {
     const hash = await this.postMagnet();
+    console.log(hash);
     // const hash = await this.getMagnetHash();
     // const hash = '92b4d5ea2d21bc2692a2cb1e5b9fbecd489863ec'
     // const files = await this.getFiles(hash);
