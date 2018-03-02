@@ -21,16 +21,28 @@ class Dashboard extends Component {
   };
 
   handleMagnetLinkDispatch = async () => {
-    const hash = await this.getMagnetHash();
+    const hash = await this.postMagnet();
+    // const hash = await this.getMagnetHash();
     // const hash = '92b4d5ea2d21bc2692a2cb1e5b9fbecd489863ec'
-    const files = await this.getFiles(hash);
-    const filename = files.find(file =>
-      file.name.toLowerCase().includes('.mp4')
-    );
-    this.setState({
-      videoSrc: `/api/torrent/${hash}/${filename.id}`
-    });
+    // const files = await this.getFiles(hash);
+    // const filename = files.find(file =>
+    //   file.name.toLowerCase().includes('.mp4')
+    // );
+    // this.setState({
+    //   videoSrc: `/api/torrent/${hash}/${filename.id}`
+    // });
   };
+
+  async postMagnet() {
+    try {
+      const response = await axios.post('/api/magnet', {
+        magnet: this.state.magnetLink
+      });
+      return response.data.hash;
+    } catch (err) {
+      console.log('postMagnet', err);
+    }
+  }
 
   async getMagnetHash() {
     try {

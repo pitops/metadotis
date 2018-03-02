@@ -5,8 +5,7 @@ import AppBar from 'material-ui/AppBar';
 import Toolbar from 'material-ui/Toolbar';
 import Typography from 'material-ui/Typography';
 import IconButton from 'material-ui/IconButton';
-import Menu, { MenuItem } from 'material-ui/Menu';
-import { FileDownload } from 'material-ui-icons';
+import { ArrowDownward, ArrowUpward, FileDownload } from 'material-ui-icons';
 import Tooltip from 'material-ui/es/Tooltip/Tooltip';
 import { Manager, Target, Popper } from 'react-popper';
 import Grow from 'material-ui/es/transitions/Grow';
@@ -14,7 +13,8 @@ import Paper from 'material-ui/es/Paper/Paper';
 import MenuList from 'material-ui/Menu/MenuList';
 import ClickAwayListener from 'material-ui/es/utils/ClickAwayListener';
 import classNames from 'classnames';
-import Button from 'material-ui/es/Button/Button';
+import * as axios from 'axios';
+import GlobalSpeed from './GlobalSpeed';
 
 const styles = theme => ({
   root: {
@@ -80,6 +80,8 @@ class Navbar extends React.Component {
             >
               Webflix
             </Typography>
+
+            <GlobalSpeed />
 
             <Manager>
               <Target>
