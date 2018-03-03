@@ -1,8 +1,9 @@
 const mime = require('mime')
-const imdb = require('../lib/imdb')
-const bridge = require('../lib/bridge')
 const express = require('express')
-const thirteen = require('../lib/1337x')
+
+const imdb = require('../libs/imdb')
+const bridge = require('../libs/bridge')
+const thirteen = require('../libs/1337x')
 
 let router = express.Router()
 
