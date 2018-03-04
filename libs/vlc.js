@@ -2,7 +2,8 @@ const exex = require('mz/child_process').exec
 
 async function play (link) {
   await stop()
-  return await exex(`nohup /Applications/VLC.app/Contents/MacOS/VLC ${link} > /dev/null 2>&1 & disown`)
+  const vlc = process.platform === 'darwin' ? '/Applications/VLC.app/Contents/MacOS/VLC' : 'vlc'
+  return await exex(`nohup ${vlc} ${link} > /dev/null 2>&1 & disown`)
 }
 
 async function stop () {
