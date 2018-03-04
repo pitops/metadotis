@@ -41,10 +41,12 @@ function status (hash = null) {
 async function add (magnet) {
   let old = get(magnet)
   if (old) {
+    console.log(`magnet ${magnet} already added`)
     return Promise.resolve(old)
   }
 
-  return new Promise(resolve => client.add(magnet, {path: dataPath, store: FSChunkStore}, resolve))
+  console.log(`adding new magnet ${magnet}`)
+  return await new Promise(resolve => client.add(magnet, {path: dataPath, store: FSChunkStore}, resolve))
 }
 
 function parse (magnet) {

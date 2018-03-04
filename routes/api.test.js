@@ -1,4 +1,5 @@
 let path = require('path')
+let mime = require('mime')
 let exec = require('mz/child_process').exec
 let axios = require('axios')
 
@@ -73,6 +74,23 @@ describe('api', () => {
     expect(response.status).toEqual(200)
     expect(response.data.hash.length).toEqual(40)
   }, 10 * 1000)
+
+  test('play on vlc', async () => {
+    let magnet = 'magnet:?xt=urn:btih:a68e47ba3f017bde1e22e8ee5a7c6a122b7b612e&dn=The Legend of Tarzan 2016 1080p BluRay x264 DTS-JYK&tr=udp://tracker.leechers-paradise.org:6969&tr=udp://tracker.coppersurfer.tk:6969&tr=udp://tracker.opentrackr.org:1337&tr=udp://tracker.zer0day.to:1337&tr=udp://tracker.pirateparty.gr:6969&tr=udp://p4p.arenabg.ch:1337&tr=udp://eddie4.nl:6969&tr=udp://tracker.internetwarriors.net:1337'
+    let response = await axios.post('http://localhost:3333/api/magnet', {magnet})
+
+    let hash = response.data.hash
+    expect(hash).toBeDefined()
+
+    response = await axios.get('http://localhost:3333/api/torrent/' + hash)
+
+    let file = response.data.files.find(f => mime.getType(f.name).match(/video/i) && !f.name.match(/sample/i))
+    expect(file).toBeDefined()
+
+    response = await axios.post('http://localhost:3333/api/vlc/play', {hash, fileId: file.id})
+    expect(response.data.status).toEqual('OK')
+
+  }, 30 * 1000)
 
   test('get torrent', async () => {
     let hash = 'B35CBB10B3D10A4AD71797FC1EA925F78DF38367'

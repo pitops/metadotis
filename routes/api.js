@@ -1,6 +1,7 @@
 const mime = require('mime')
 const express = require('express')
 
+const vlc = require('../libs/vlc')
 const imdb = require('../libs/imdb')
 const bridge = require('../libs/bridge')
 const thirteen = require('../libs/1337x')
@@ -8,6 +9,15 @@ const thirteen = require('../libs/1337x')
 let router = express.Router()
 
 router.get('/', (req, res) => res.json({message: 'API'}))
+
+router.post('/vlc/play', async (req, res) => {
+  let hash = req.body.hash
+  let fileId = req.body.fileId
+
+  await vlc.play(`http://localhost:3333/api/torrent/${hash}/${fileId}`)
+
+  res.json({status: 'OK'})
+})
 
 router.get('/movies/popular', async (req, res) => {
   let movies = await imdb.popular()
@@ -55,12 +65,15 @@ router.post('/magnet', async (req, res, next) => {
     return next(e)
   }
 
+  console.log('api response to add magnet hash ', hash)
   res.json({hash: hash})
 })
 
 router.get('/torrent/:hash', (req, res, next) => {
   let hash = req.params.hash
   let torrent
+
+  console.log('get torrent request')
 
   try {
     torrent = bridge.getTorrent(hash)
@@ -70,6 +83,7 @@ router.get('/torrent/:hash', (req, res, next) => {
     return next(e)
   }
 
+  console.log('ready to respond to get torrent ', torrent.files.legnth)
   res.json(torrent)
 })
 
@@ -79,7 +93,7 @@ router.get('/torrent/:hash/:fileid', (req, res, next) => {
 
   let range = req.headers.range
 
-  console.log({hash, fileid, range})
+  console.log('stream', {hash, fileid, range})
 
   let file
   try {
