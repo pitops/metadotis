@@ -16,6 +16,7 @@ import classNames from 'classnames';
 import TorrentStatus from './TorrentStatus';
 import BandWidthStatus from '../shared/BandWidthStatus';
 import * as axios from 'axios/index';
+import Magnet from './Magnet';
 
 const styles = theme => ({
   root: {
@@ -46,7 +47,8 @@ class Navbar extends React.Component {
   state = {
     open: false,
     uploadSpeed: '0.00 Kb/s',
-    downloadSpeed: '0.00 Kb/s'
+    downloadSpeed: '0.00 Kb/s',
+    magnetLink: ''
   };
 
   componentWillMount() {
@@ -67,6 +69,37 @@ class Navbar extends React.Component {
 
   getGlobalStatus() {
     return axios.get('api/status');
+  }
+
+  handleMagnetChange = prop => event => {
+    this.setState({ [prop]: event.target.value });
+  };
+
+  handleMagnetLinkDispatch = async () => {
+    console.log('yo');
+    console.log('this', this.state.magnetLink);
+    const hash = await this.postMagnet();
+    // console.log(hash);
+    // const hash = await this.getMagnetHash();
+    // const hash = '92b4d5ea2d21bc2692a2cb1e5b9fbecd489863ec'
+    // const files = await this.getFiles(hash);
+    // const filename = files.find(file =>
+    //   file.name.toLowerCase().includes('.mp4')
+    // );
+    // this.setState({
+    //   videoSrc: `/api/torrent/${hash}/${filename.id}`
+    // });
+  };
+
+  async postMagnet() {
+    try {
+      const response = await axios.post('/api/magnet', {
+        magnet: this.state.magnetLink
+      });
+      return response.data.hash;
+    } catch (err) {
+      console.log('postMagnet', err);
+    }
   }
 
   handleClick = () => {
@@ -99,6 +132,12 @@ class Navbar extends React.Component {
             >
               Webflix
             </Typography>
+
+            <Magnet
+              value={this.state.magnetLink}
+              onChange={this.handleMagnetChange.bind(this)}
+              onClick={this.handleMagnetLinkDispatch.bind(this)}
+            />
 
             <BandWidthStatus
               downloadSpeed={this.state.downloadSpeed}
