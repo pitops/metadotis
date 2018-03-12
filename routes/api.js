@@ -24,13 +24,13 @@ router.get('/movies/popular', async (req, res) => {
   res.json({movies})
 })
 
-router.get('/movies/poster/:id', async (req, res) => {
+router.get('/movies/poster-data/:id', async (req, res) => {
   let id = req.params.id
   let width = req.query.w
   let height = req.query.h
 
-  let image = await imdb.poster(id, width, height)
-  res.json({image})
+  let posterData = await imdb.posterData(id, width, height)
+  res.json({posterData})
 })
 
 router.get('/search/movies', async (req, res) => {

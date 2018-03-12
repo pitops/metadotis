@@ -11,6 +11,7 @@
   "author": "Michael Theodorides <mc.theodorides@gmail.com>, Petros Kyriakou<9pitops@gmail.com>",
   "license": "MIT",
   "dependencies": {
+    "async": "^2.6.0",
     "axios": "^0.17.1",
     "body-parser": "^1.18.2",
     "cheerio": "^1.0.0-rc.2",

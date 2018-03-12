@@ -1,5 +1,6 @@
 const request = require('request-promise-native')
 const cheerio = require('cheerio')
+const async = require('async')
 
 async function popular () {
   let response = await request.get('http://www.imdb.com/chart/moviemeter')
@@ -16,7 +17,7 @@ async function popular () {
     })
     .toArray()
 
-  return movies
+  return await _addPosters(movies)
 }
 
 async function search (query) {
@@ -34,26 +35,52 @@ async function search (query) {
     })
     .toArray()
 
-  return movies
+  return await _addPosters(movies)
 }
 
-async function poster (id, width = 200, height) {
+async function posterData (id) {
   let response = await request.get('http://www.imdb.com/title/' + id)
   let $ = cheerio.load(response)
 
-  let owre = /ux\d+/i
-  let cropre = /cr\d+,\d+,\d+,\d+/i
   let image = $('.poster a img').attr('src')
   // https://images-na.ssl-images-amazon.com/images/M/MV5BMTYzMDE2MzI4MF5BMl5BanBnXkFtZTgwNTkxODgxOTE@._V1_UX500_CR0,0,500,600_AL_.jpg
 
-  let ow = parseInt(image.match(owre).shift().replace('UX', ''))
-  let oh = parseInt(image.match(cropre).shift().split(',').pop())
-  height = height || Math.floor(width / ow * oh)
+  if (!image) {
+    return {width: 67, height: 98, template: 'https://images-na.ssl-images-amazon.com/images/G/01/imdb/images/nopicture/67x98/film-2500266839._CB514893543_.png'}
+  }
 
-  let newImage = image.replace(owre, `UX${width}`).replace(cropre, `CR0,0,${width},${height}`)
+  let cropre = /cr\d+,\d+,\d+,\d+/i
+  let crop = image.match(cropre) || ['0,0,200,200']
 
-  // console.log({ow, oh, width, height, newImage})
-  return newImage
+  let parts = crop.shift().split(',')
+  let ow = parseInt(parts[3])
+  let oh = parseInt(parts[2])
+
+  let template = image
+    .replace(/ux\d+/i, `UX{width}`)
+    .replace(/uy\d+/i, `UY{height}`)
+    .replace(cropre, `CR0,0,{width},{height}`)
+
+  let width = 500
+  let height = Math.floor(width / ow * oh)
+
+  return {width, height, template}
 }
 
-module.exports = {popular, search, poster}
+async function _addPosters (movies) {
+  return new Promise((resolve, reject) => {
+    async.mapLimit(movies, 5, async movie => {
+      let data = await posterData(movie.id)
+
+      movie.poster = data.template
+        .replace(/\{width\}/ig, data.width)
+        .replace(/\{height\}/ig, data.height)
+
+      movie.posterData = data
+
+      return movie
+    }, (error, data) => error ? reject(error) : resolve(data))
+  })
+}
+
+module.exports = {popular, search, posterData}

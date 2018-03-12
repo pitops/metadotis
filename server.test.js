@@ -1,49 +1,36 @@
-let path = require('path')
 let mime = require('mime')
 let exec = require('mz/child_process').exec
 let axios = require('axios')
 
-describe('api', () => {
+describe('server api', () => {
   beforeAll(async (done) => {
     try {
       await exec('pm2 delete all')
     } catch (e) {}
 
-    await new Promise(resolve => setTimeout(resolve, 1000))
+    await new Promise(resolve => setTimeout(resolve, 2000))
 
-    await exec('pm2 restart pm2.dev.config.js', {cwd: path.resolve(__dirname, '..')})
-    await new Promise(resolve => setTimeout(resolve, 1000))
+    await exec('pm2 restart pm2.dev.config.js', {cwd: __dirname})
+    await new Promise(resolve => setTimeout(resolve, 2000))
 
     done()
-  }, 5 * 1000)
+  }, 10 * 1000)
 
   test('get most popular movies', async () => {
     let response = await axios.get('http://localhost:3333/api/movies/popular')
     expect(response.data.movies.length).toEqual(100)
-  })
+  }, 60 * 1000)
 
-  test('get movie poster', async () => {
-    let response = await axios.get('http://localhost:3333/api/movies/poster/tt0343818')
-    console.log('poster defaults', response.data)
-    expect(response.data.image.length).toBeGreaterThan(10)
-  })
-
-  test('get movie poster with custom width', async () => {
-    let response = await axios.get('http://localhost:3333/api/movies/poster/tt0343818?w=600')
-    console.log('poster custom width', response.data)
-    expect(response.data.image.length).toBeGreaterThan(10)
-  })
-
-  test('get movie poster with custom width and height', async () => {
-    let response = await axios.get('http://localhost:3333/api/movies/poster/tt0343818?w=600&h=600')
-    console.log('poster custom width and height', response.data)
-    expect(response.data.image.length).toBeGreaterThan(10)
+  test('get movie poster data', async () => {
+    let response = await axios.get('http://localhost:3333/api/movies/poster-data/tt0343818')
+    console.log('poster data', response.data)
+    expect(response.data.posterData.template.length).toBeGreaterThan(10)
   })
 
   test('search movies', async () => {
     let response = await axios.get('http://localhost:3333/api/search/movies?q=robot')
     expect(response.data.movies.length).toEqual(50)
-  }, 10 * 1000)
+  }, 60 * 1000)
 
   test('search torrent', async () => {
     let response = await axios.get('http://localhost:3333/api/search/torrents?q=robot&page=1')
