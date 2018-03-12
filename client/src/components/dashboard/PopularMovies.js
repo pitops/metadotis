@@ -18,10 +18,10 @@ class PopularMovies extends React.Component {
 
   configurePosterDimensions(posterData) {
     const { template } = posterData;
-    const height = 600;
+    const height = 580;
     const width = 400;
 
-    const url = template.replace('{width}', width).replace('{height}', height);
+    const url = template.replace(/{width}/g, width).replace('{height}', height);
 
     return url;
   }
@@ -33,10 +33,9 @@ class PopularMovies extends React.Component {
       <Grid container justify="center" spacing={24}>
         {movies.map(movie => {
           return (
-            <Grid item sm={3}>
+            <Grid item sm={3} key={movie.id}>
               <MovieThumbnail
                 poster={this.configurePosterDimensions(movie.posterData)}
-                key={movie.id}
               />
             </Grid>
           );
