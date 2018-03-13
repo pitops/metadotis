@@ -21,12 +21,6 @@ describe('server api', () => {
     expect(response.data.movies.length).toEqual(100)
   }, 60 * 1000)
 
-  test('get movie poster data', async () => {
-    let response = await axios.get('http://localhost:3333/api/movies/poster-data/tt0343818')
-    console.log('poster data', response.data)
-    expect(response.data.posterData.template.length).toBeGreaterThan(10)
-  })
-
   test('search movies', async () => {
     let response = await axios.get('http://localhost:3333/api/search/movies?q=robot')
     expect(response.data.movies.length).toEqual(50)
