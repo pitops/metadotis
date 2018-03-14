@@ -28,7 +28,7 @@ describe('server api', () => {
 
   test('search torrent', async () => {
     let response = await axios.get('http://localhost:3333/api/search/torrents?q=robot&page=1')
-    expect(response.data.movies.length > 1).toBeTruthy()
+    expect(response.data.length).toBeTruthy()
   }, 10 * 1000)
 
   test('get status', async () => {

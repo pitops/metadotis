@@ -1,8 +1,8 @@
 let lib = require('./1337x')
 
-describe('1337x', () => {
+describe('1337x torrents', () => {
   test('search', async () => {
-    let result = await lib.search('pirate', 1)
-    expect(result.movies.length > 1).toBeTruthy()
-  }, 30 * 1000)
+    let results = await lib.search('pirate', 1)
+    expect(results.length).toBeTruthy()
+  }, 10 * 1000)
 })
