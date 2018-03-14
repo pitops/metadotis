@@ -3,8 +3,10 @@ const browser = require('./browser')
 
 async function popular () {
   let page = await  browser.newPage()
+
   await page.setViewport({width: 1024, height: 100000})
   await page.goto('http://www.imdb.com/chart/moviemeter', {waitLoad: true, waitNetworkIdle: true})
+  await page.waitFor(100)
 
   let movies = await page
     .evaluate(() => {
@@ -32,6 +34,7 @@ async function search (query) {
 
   await page.setViewport({width: 1024, height: 100000})
   await page.goto('http://www.imdb.com/search/title?title=' + query, {waitLoad: true, waitNetworkIdle: true})
+  await page.waitFor(100)
 
   let movies = await page.evaluate(() => {
     return $('.lister-list > .lister-item')

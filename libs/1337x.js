@@ -1,5 +1,6 @@
-const request = require('request-promise-native')
+const bytes = require('bytes')
 const cheerio = require('cheerio')
+const request = require('request-promise-native')
 const respected = require('./respected')
 
 async function getMovieMagnet (path) {
@@ -17,35 +18,30 @@ async function search (q, page) {
   let movies = $('tr')
     .map(function () {
       return {
-        name: $(this).find('td.name a').last().html(),
+        name: $(this).find('td.name a').last().text(),
         path: $(this).find('td.name a').last().attr('href'),
-        seeds: $(this).find('td.seeds').html(),
-        uploader: $(this).find('td.coll-5 a').html()
+        size: $(this).find('td.size').html(),
+        seeds: $(this).find('td.seeds').text(),
+        leeches: $(this).find('td.leeches').text(),
+        uploader: $(this).find('td.coll-5 a').text()
       }
     })
     .toArray()
     .filter(m => !!respected().find(re => re.test(m.uploader)))
     .map(async m => {
       let magnet = await getMovieMagnet(m.path)
-      return {name: m.name, seeds: m.seeds, uploader: m.uploader, magnet: magnet}
-    })
-
-  let found = false
-  let next = $('.pagination li')
-    .filter(function () {
-      if (found) {
-        return true
+      return {
+        name: m.name,
+        size: bytes.parse(m.size.replace(/<span.*$/, '')),
+        seeds: m.seeds,
+        leeches: m.leeches,
+        uploader: m.uploader,
+        magnet: magnet,
+        source: '1337x'
       }
-      found = $(this).attr('class') === 'active'
     })
-    .map(function () {
-      return $(this).find('a').html()
-    })
-    .toArray()
-    .filter(v => parseInt(v))
-    .shift()
 
-  return {movies: await Promise.all(movies), next}
+  return await Promise.all(movies)
 }
 
 module.exports = {search}
