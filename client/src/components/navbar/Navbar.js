@@ -76,8 +76,6 @@ class Navbar extends React.Component {
   };
 
   handleMagnetLinkDispatch = async () => {
-    console.log('yo');
-    console.log('this', this.state.magnetLink);
     const hash = await this.postMagnet();
     // console.log(hash);
     // const hash = await this.getMagnetHash();
