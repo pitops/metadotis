@@ -73,6 +73,13 @@ describe('server api', () => {
 
   }, 30 * 1000)
 
+  test('get torrents', async () => {
+    let response = await axios.get('http://localhost:3333/api/torrents')
+
+    expect(response.status).toEqual(200)
+    expect(response.data.length).toEqual(2)
+  })
+
   test('get torrent', async () => {
     let hash = 'B35CBB10B3D10A4AD71797FC1EA925F78DF38367'
     let response = await axios.get('http://localhost:3333/api/torrent/' + hash)

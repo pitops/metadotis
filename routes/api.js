@@ -77,11 +77,24 @@ router.post('/magnet', async (req, res, next) => {
   res.json({hash: hash})
 })
 
+router.get('/torrents', (req, res, next) => {
+  let torrents
+  try {
+    torrents = bridge.getTorrents()
+  } catch (e) {
+    e.code = 2
+    e.status = 404
+    e.description = 'could not get files'
+    return next(e)
+  }
+
+  console.log('ready to respond to get torrenta', torrents.length)
+  res.json(torrents)
+})
+
 router.get('/torrent/:hash', (req, res, next) => {
   let hash = req.params.hash
   let torrent
-
-  console.log('get torrent request')
 
   try {
     torrent = bridge.getTorrent(hash)
@@ -91,7 +104,7 @@ router.get('/torrent/:hash', (req, res, next) => {
     return next(e)
   }
 
-  console.log('ready to respond to get torrent ', torrent.files.legnth)
+  console.log('ready to respond to get torrent ', torrent.files.length)
   res.json(torrent)
 })
 
@@ -108,6 +121,7 @@ router.get('/torrent/:hash/:fileid', (req, res, next) => {
     file = bridge.getFile(hash, fileid)
   } catch (e) {
     e.code = 2
+    e.status = 404
     e.description = 'could not get files'
     return next(e)
   }

@@ -24,6 +24,21 @@ function get (hash) {
   return torrent
 }
 
+function torrents () {
+  let torrents = client.torrents
+    .map(torrent => {
+      torrent.files = torrent.files
+        .map(file => {
+          file.id = getHash(file.name)
+          return file
+        })
+
+      return torrent
+    })
+
+  return torrents
+}
+
 function status (hash = null) {
   let _status = torrent => ({
     upload: (torrent.uploadSpeed / 1000).toFixed(2) + ' Kb/s',
@@ -65,4 +80,4 @@ function getHash (string) {
   return hash.digest('hex')
 }
 
-module.exports = {on, add, get, status}
+module.exports = {on, add, get, status, torrents}

@@ -7,7 +7,7 @@ async function play (link) {
 }
 
 async function stop () {
-  return await exex(`ps -fax | grep -i 'vlc' | grep -v grep | awk '{print $2}' | xargs kill`)
+  return await exex(`ps -fax | grep -i 'vlc' | grep -v grep | awk '{print $2}' | xargs kill -9`)
 }
 
 module.exports = {play, stop}
