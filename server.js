@@ -28,7 +28,7 @@ app.use(bodyParser.urlencoded({extended: true}))
 
 app.use('/', index)
 
-app.use(function (err, req, res) {
+app.use((err, req, res) => {
   console.info('error', err.message)
   res.status(err.status || 500).json({message: err.message, code: err.code})
 })

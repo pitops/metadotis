@@ -1,31 +1,33 @@
 const bytes = require('bytes')
-const cheerio = require('cheerio')
-const request = require('request-promise-native')
+const browser = require('./browser')
 const respected = require('./respected')
-const userAgent = require('./user-agent')
 
-async function search (q, page = 1) {
-  let req = `https://katcr.co/katsearch/page/${page}/${q}`
-  let response = await request.get(req, {headers: {'User-Agent': userAgent}})
+async function search (q, p) {
+  let page = await browser.newPage()
+  await page.setViewport({width: 1024, height: 1024})
+  await page.goto(`https://katcr.co/katsearch/page/${p || 0}/${q}`)
+  await page.reload()
 
-  let $ = cheerio.load(response)
-
-  let movies = $('table.table tr')
-    .map(function () {
-      return {
-        name: $(this).find('td > div > .text--left > a').text(),
-        size: $(this).find('td[data-title="Size"]').text(),
-        seeds: $(this).find('td[data-title="Seed"]').text(),
-        Leeches: $(this).find('td[data-title="Leech"]').text(),
-        uploader: $(this).find('td > div > .text--left > span > span > a').text(),
-        magnet: $(this).find('td > div > .torrents_table__actions > a').last().attr('href'),
-        source: 'kat'
-      }
+  let movies = await page
+    .evaluate(() => {
+      return $('table.table tr')
+        .map(function () {
+          return {
+            name: $(this).find('td > div > .text--left > a').text(),
+            size: $(this).find('td[data-title="Size"]').text(),
+            seeds: $(this).find('td[data-title="Seed"]').text(),
+            Leeches: $(this).find('td[data-title="Leech"]').text(),
+            uploader: $(this).find('td > div > .text--left > span > span > a').text(),
+            magnet: $(this).find('td > div > .torrents_table__actions > a').last().attr('href'),
+            source: 'kat'
+          }
+        })
+        .toArray()
     })
-    .toArray()
-    .filter(m => !!respected().find(re => re.test(m.uploader)))
+  page.close()
 
   movies
+    .filter(m => respected().find(re => re.test(m.uploader)))
     .forEach(movie => {
       movie.size = bytes.parse(movie.size)
     })

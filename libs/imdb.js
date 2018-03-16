@@ -1,4 +1,3 @@
-const async = require('async')
 const browser = require('./browser')
 
 async function popular () {
@@ -22,7 +21,6 @@ async function popular () {
         })
         .toArray()
     })
-
   await page.close()
 
   movies.forEach(movie => movie.posterData = posterData(movie.poster))
@@ -49,11 +47,38 @@ async function search (query) {
       })
       .toArray()
   })
-
-  await page.close()
+  page.close()
 
   movies.forEach(movie => movie.posterData = posterData(movie.poster))
   return movies
+}
+
+async function details (id) {
+  let page = await browser.newPage()
+  await page.setViewport({width: 1024, height: 1024})
+
+  await page.goto('https://www.imdb.com/title/' + id, {waitLoad: true, waitNetworkIdle: true})
+  await page.waitFor(100)
+
+  let details = await page
+    .evaluate(() => {
+      let year = $('.title_wrapper h1 span').text().replace(/[\(\)]/g, '')
+      let title = $('.title_wrapper h1').text().replace(/\(\d+\)\s+$/, '').trim()
+      let rating = $('.ratingValue strong span').text()
+      let poster = $('.poster a img').attr('src')
+      let actors = $('.cast_list tr [itemprop="actor"] a span').toArray().map(item => $(item).text())
+      let summary = $('.summary_text').text().trim()
+      let writers = $('[itemprop="creator"] a span').toArray().map(item => $(item).text())
+      let director = $('[itemprop="director"] a span').toArray().map(item => $(item).text())
+
+      return {year, title, rating, poster, actors, summary, writers, director}
+    })
+  page.close()
+
+  details.id = id
+  details.posterData = posterData(details.poster)
+
+  return details
 }
 
 function posterData (poster) {
@@ -79,4 +104,4 @@ function posterData (poster) {
   return {width, height, template}
 }
 
-module.exports = {popular, search, posterData}
+module.exports = {popular, search, details}

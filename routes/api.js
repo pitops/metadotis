@@ -21,6 +21,12 @@ router.post('/vlc/play', async (req, res) => {
   res.json({status: 'OK'})
 })
 
+router.get('/movie/:id', async (req, res) => {
+  let id = req.params.id
+  let details = await imdb.details(id)
+  res.json({movie: details})
+})
+
 router.get('/movies/popular', async (req, res) => {
   let movies = await imdb.popular()
   res.json({movies})
@@ -52,13 +58,13 @@ router.get('/search/torrents', async (req, res) => {
     }
   }
 
-  res.json(result)
+  res.json({torrents: result})
 })
 
 router.get('/status/', (req, res, next) => {
   let status = bridge.getStatus()
   console.log({status})
-  res.json(status)
+  res.json({status})
 })
 
 router.post('/magnet', async (req, res, next) => {
@@ -74,7 +80,7 @@ router.post('/magnet', async (req, res, next) => {
   }
 
   console.log('api response to add magnet hash ', hash)
-  res.json({hash: hash})
+  res.json({hash})
 })
 
 router.get('/torrents', (req, res, next) => {
@@ -89,7 +95,7 @@ router.get('/torrents', (req, res, next) => {
   }
 
   console.log('ready to respond to get torrenta', torrents.length)
-  res.json(torrents)
+  res.json({torrents})
 })
 
 router.get('/torrent/:hash', (req, res, next) => {
@@ -105,7 +111,7 @@ router.get('/torrent/:hash', (req, res, next) => {
   }
 
   console.log('ready to respond to get torrent ', torrent.files.length)
-  res.json(torrent)
+  res.json({torrent})
 })
 
 router.get('/torrent/:hash/:fileid', (req, res, next) => {

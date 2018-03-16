@@ -10,4 +10,9 @@ describe('imdb', () => {
     let results = await imdb.search('pirate')
     expect(results.length).toEqual(50)
   })
+
+  test('details', async () => {
+    let results = await imdb.details('tt1043740')
+    expect(results).toBeTruthy()
+  })
 })

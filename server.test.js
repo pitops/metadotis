@@ -21,6 +21,11 @@ describe('server api', () => {
     expect(response.data.movies.length).toEqual(100)
   }, 60 * 1000)
 
+  test('get movie details', async () => {
+    let response = await axios.get('http://localhost:3333/api/movie/tt3371366')
+    expect(response.data.movie).toBeTruthy()
+  }, 60 * 1000)
+
   test('search movies', async () => {
     let response = await axios.get('http://localhost:3333/api/search/movies?q=robot')
     expect(response.data.movies.length).toEqual(50)
@@ -28,16 +33,16 @@ describe('server api', () => {
 
   test('search torrent', async () => {
     let response = await axios.get('http://localhost:3333/api/search/torrents?q=robot&page=1')
-    expect(response.data.length).toBeTruthy()
-  }, 10 * 1000)
+    expect(response.data.torrents.length).toBeTruthy()
+  }, 20 * 1000)
 
   test('get status', async () => {
     let response = await axios.get('http://localhost:3333/api/status/')
 
     expect(response.status).toEqual(200)
-    expect(response.data.upload).toBeDefined()
-    expect(response.data.download).toBeDefined()
-    expect(response.data.progress).toBeDefined()
+    expect(response.data.status.upload).toBeDefined()
+    expect(response.data.status.download).toBeDefined()
+    expect(response.data.status.progress).toBeDefined()
   })
 
   test('post new magnet', async () => {
@@ -65,7 +70,7 @@ describe('server api', () => {
 
     response = await axios.get('http://localhost:3333/api/torrent/' + hash)
 
-    let file = response.data.files.find(f => mime.getType(f.name).match(/video/i) && !f.name.match(/sample/i))
+    let file = response.data.torrent.files.find(f => mime.getType(f.name).match(/video/i) && !f.name.match(/sample/i))
     expect(file).toBeDefined()
 
     response = await axios.post('http://localhost:3333/api/vlc/play', {hash, fileId: file.id})
@@ -77,7 +82,7 @@ describe('server api', () => {
     let response = await axios.get('http://localhost:3333/api/torrents')
 
     expect(response.status).toEqual(200)
-    expect(response.data.length).toEqual(2)
+    expect(response.data.torrents.length).toEqual(2)
   })
 
   test('get torrent', async () => {
@@ -85,7 +90,7 @@ describe('server api', () => {
     let response = await axios.get('http://localhost:3333/api/torrent/' + hash)
 
     expect(response.status).toEqual(200)
-    expect(response.data.files.length).toEqual(2)
+    expect(response.data.torrent.files.length).toEqual(2)
 
   })
 
@@ -93,7 +98,7 @@ describe('server api', () => {
     let hash = 'B35CBB10B3D10A4AD71797FC1EA925F78DF38367'
     let response = await axios.get('http://localhost:3333/api/torrent/' + hash)
 
-    let file = response.data.files.shift()
+    let file = response.data.torrent.files.shift()
     response = await axios.get(`http://localhost:3333/api/torrent/${hash}/${file.id}`)
 
     expect(response.status).toEqual(200)
