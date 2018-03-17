@@ -1,6 +1,4 @@
 import React from 'react';
-import Typography from 'material-ui/es/Typography/Typography';
-import Grid from 'material-ui/es/Grid/Grid';
 import { parse } from 'qs';
 
 const styles = {

@@ -18,6 +18,7 @@ import BandWidthStatus from '../shared/BandWidthStatus';
 import * as axios from 'axios/index';
 import Magnet from './Magnet';
 import Divider from 'material-ui/es/Divider/Divider';
+import Link from 'react-router-dom/es/Link';
 
 const styles = theme => ({
   root: {
@@ -49,6 +50,10 @@ const styles = theme => ({
   hr: {
     backgroundColor: 'rgba(144, 100, 100, 0.61)',
     margin: '10px 0'
+  },
+  link: {
+    color: '#FB8C00',
+    textDecoration: 'none'
   }
 });
 
@@ -164,7 +169,9 @@ class Navbar extends React.Component {
               color="inherit"
               className={`${classes.flex} ${classes.title}`}
             >
-              Webflix
+              <Link to="/" className={classes.link}>
+                Webflix
+              </Link>
             </Typography>
 
             <Magnet

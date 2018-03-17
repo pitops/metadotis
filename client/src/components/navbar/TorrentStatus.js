@@ -11,6 +11,11 @@ import * as axios from 'axios';
 const styles = {
   root: {
     flexGrow: 1
+  },
+  link: {
+    color: 'rgba(255, 255, 255, 0.7)',
+    textDecoration: 'none',
+    fontSize: '12px'
   }
 };
 
@@ -114,8 +119,11 @@ class TorrentStatus extends React.Component {
 
     return (
       <div className={classes.root}>
-        <Typography variant="caption">
-          <Link to={{ pathname: path }}>{name}</Link> ({progress})
+        <Typography variant="body2">
+          <Link to={{ pathname: path }} className={classes.link}>
+            {name}
+          </Link>{' '}
+          ({progress})
         </Typography>
         <LinearProgress
           color="secondary"
@@ -131,7 +139,7 @@ class TorrentStatus extends React.Component {
             />
           </div>
         ) : (
-          <Typography variant="body2">Download complete</Typography>
+          <Typography variant="caption">Download complete</Typography>
         )}
       </div>
     );
