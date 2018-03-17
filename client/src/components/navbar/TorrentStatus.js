@@ -5,6 +5,7 @@ import { LinearProgress } from 'material-ui/Progress';
 import Typography from 'material-ui/es/Typography/Typography';
 import BandWidthStatus from '../shared/BandWidthStatus';
 import classNames from './TorrentStatus.scss';
+import { Link } from 'react-router-dom';
 import * as axios from 'axios';
 
 const styles = {
@@ -37,7 +38,8 @@ class TorrentStatus extends React.Component {
           uploadSpeed: response.data.torrent.status.upload,
           downloadSpeed: response.data.torrent.status.download,
           progress: response.data.torrent.status.progress,
-          name: this.extractName(response.data.torrent.files)
+          hash: response.data.torrent.hash,
+          ...this.extractName(response.data.torrent.files)
         });
 
         if (parseInt(this.state.progress) === 100) {
@@ -63,14 +65,15 @@ class TorrentStatus extends React.Component {
       '[',
       ']'
     ];
-    let fileName = files.find(file => file.name.includes('.mp4'));
+    const file = files.find(file => file.name.includes('.mp4'));
 
-    if (fileName) {
-      fileName = fileName.name;
+    if (file) {
+      let fileId = file.id;
+      let fileName = file.name;
       keywords.forEach(keyword => {
         fileName = fileName.replace(keyword, '');
       });
-      return fileName.replace(/\./g, ' ');
+      return { name: fileName.replace(/\./g, ' '), id: fileId };
     }
 
     return 'Cannot extract filename';
@@ -98,12 +101,21 @@ class TorrentStatus extends React.Component {
 
   render() {
     const { classes } = this.props;
-    const { progress, name, buffer, downloadSpeed, uploadSpeed } = this.state;
+    const {
+      progress,
+      hash,
+      id,
+      name,
+      buffer,
+      downloadSpeed,
+      uploadSpeed
+    } = this.state;
+    const path = `/stream?hash=${hash}&fileid=${id}`;
 
     return (
       <div className={classes.root}>
         <Typography variant="caption">
-          {name} ({progress})
+          <Link to={{ pathname: path }}>{name}</Link> ({progress})
         </Typography>
         <LinearProgress
           color="secondary"

@@ -1,8 +1,11 @@
 import React, { Component } from 'react';
-
+import { BrowserRouter } from 'react-router-dom';
 import withRoot from '../../withRoot';
 import classes from './app.scss';
 import Dashboard from '../dashboard/Dashboard';
+import Stream from '../torrent/Stream';
+import { Route } from 'react-router-dom';
+import Navbar from '../navbar/Navbar';
 
 class App extends Component {
   state = {
@@ -29,9 +32,13 @@ class App extends Component {
     const { open } = this.state;
 
     return (
-      <div className={classes.main}>
-        <Dashboard />
-      </div>
+      <BrowserRouter>
+        <div className={classes.main}>
+          <Navbar />
+          <Route path="/stream" component={Stream} />
+          <Route path="/" exact component={Dashboard} />
+        </div>
+      </BrowserRouter>
     );
   }
 }

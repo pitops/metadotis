@@ -21,7 +21,11 @@ import Divider from 'material-ui/es/Divider/Divider';
 
 const styles = theme => ({
   root: {
-    flexGrow: 1
+    flexGrow: 1,
+    position: 'absolute',
+    right: 0,
+    left: 0,
+    zIndex: 10000
   },
   colorPrimary: {
     backgroundColor: '#38393a'
