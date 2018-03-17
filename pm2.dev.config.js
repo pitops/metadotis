@@ -17,15 +17,15 @@ module.exports = {
         'PORT': 3333
       }
     },
-    // {
-    //   name: 'client',
-    //   cwd: 'client',
-    //   script: 'npm',
-    //   args: 'start',
-    //   env: {
-    //     'NODE_ENV': 'development',
-    //     'PORT': 3000
-    //   }
-    // }
+    {
+      name: 'client',
+      cwd: 'client',
+      script: 'npm',
+      args: 'start',
+      env: {
+        'NODE_ENV': 'development',
+        'PORT': 3000
+      }
+    }
   ]
 }

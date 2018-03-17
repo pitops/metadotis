@@ -17,6 +17,7 @@ import TorrentStatus from './TorrentStatus';
 import BandWidthStatus from '../shared/BandWidthStatus';
 import * as axios from 'axios/index';
 import Magnet from './Magnet';
+import Divider from 'material-ui/es/Divider/Divider';
 
 const styles = theme => ({
   root: {
@@ -40,6 +41,10 @@ const styles = theme => ({
   },
   popperClose: {
     pointerEvents: 'none'
+  },
+  hr: {
+    backgroundColor: 'rgba(144, 100, 100, 0.61)',
+    margin: '10px 0'
   }
 });
 
@@ -48,16 +53,27 @@ class Navbar extends React.Component {
     open: false,
     uploadSpeed: '0.00 Kb/s',
     downloadSpeed: '0.00 Kb/s',
-    magnetLink: ''
+    magnetLink: '',
+    torrents: []
   };
 
   componentWillMount() {
+    (async () => {
+      const response = await this.getTorrents();
+      console.log(response.torrents);
+      this.setState({
+        torrents: response.torrents.map(torrent => {
+          return { hash: torrent.hash };
+        })
+      });
+    })();
+
     setInterval(() => {
       (async () => {
-        const status = await this.getGlobalStatus();
+        const res = await this.getGlobalStatus();
         this.setState({
-          uploadSpeed: status.data.upload,
-          downloadSpeed: status.data.download
+          uploadSpeed: res.data.status.upload,
+          downloadSpeed: res.data.status.download
         });
       })();
     }, 10000);
@@ -77,7 +93,14 @@ class Navbar extends React.Component {
 
   handleMagnetLinkDispatch = async () => {
     const hash = await this.postMagnet();
-    // console.log(hash);
+    const isAlreadyStored = this.state.torrents.find(
+      torrent => torrent.hash === hash
+    );
+    if (!isAlreadyStored) this.state.torrents.push({ hash });
+
+    this.setState({
+      magnetLink: ''
+    });
     // const hash = await this.getMagnetHash();
     // const hash = '92b4d5ea2d21bc2692a2cb1e5b9fbecd489863ec'
     // const files = await this.getFiles(hash);
@@ -88,6 +111,15 @@ class Navbar extends React.Component {
     //   videoSrc: `/api/torrent/${hash}/${filename.id}`
     // });
   };
+
+  async getTorrents() {
+    try {
+      const response = await axios.get('/api/torrents');
+      return response.data;
+    } catch (err) {
+      console.log('postMagnet', err);
+    }
+  }
 
   async postMagnet() {
     try {
@@ -117,7 +149,7 @@ class Navbar extends React.Component {
 
   render() {
     const { classes } = this.props;
-    const { open } = this.state;
+    const { open, downloadSpeed, uploadSpeed, torrents } = this.state;
 
     return (
       <div className={classes.root}>
@@ -138,8 +170,8 @@ class Navbar extends React.Component {
             />
 
             <BandWidthStatus
-              downloadSpeed={this.state.downloadSpeed}
-              uploadSpeed={this.state.uploadSpeed}
+              downloadSpeed={downloadSpeed}
+              uploadSpeed={uploadSpeed}
             />
 
             <Manager>
@@ -172,15 +204,18 @@ class Navbar extends React.Component {
                   >
                     <Paper style={{ width: '350px', padding: '15px' }}>
                       <Typography variant="subheading">
-                        Downloads (1)
+                        Downloads ({torrents.length})
                       </Typography>
-                      <MenuList role="menu">
-                        {/*<MenuItem onClick={this.handleClose}>Profile</MenuItem>*/}
-                        {/*<MenuItem onClick={this.handleClose}>My account</MenuItem>*/}
-                        {/*<MenuItem onClick={this.handleClose}>Logout</MenuItem>*/}
-                      </MenuList>
-                      {/*No downloads active*/}
-                      <TorrentStatus />
+                      {torrents.length
+                        ? torrents.map(torrent => {
+                            return (
+                              <React.Fragment key={torrent.hash}>
+                                <TorrentStatus hash={torrent.hash} />{' '}
+                                <Divider classes={{ root: classes.hr }} />
+                              </React.Fragment>
+                            );
+                          })
+                        : 'No downloads yet'}
                     </Paper>
                   </Grow>
                 </ClickAwayListener>

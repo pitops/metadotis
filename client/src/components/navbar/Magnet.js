@@ -1,7 +1,6 @@
 import React from 'react';
 import Grid from 'material-ui/es/Grid/Grid';
 import FormControl from 'material-ui/es/Form/FormControl';
-import InputLabel from 'material-ui/es/Input/InputLabel';
 import Input from 'material-ui/es/Input/Input';
 import InputAdornment from 'material-ui/es/Input/InputAdornment';
 import Icon from 'material-ui/es/Icon/Icon';

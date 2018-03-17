@@ -94,7 +94,7 @@ router.get('/torrents', (req, res, next) => {
     return next(e)
   }
 
-  console.log('ready to respond to get torrenta', torrents.length)
+  console.log('ready to respond to get torrents', torrents.length)
   res.json({torrents})
 })
 

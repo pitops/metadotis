@@ -1,4 +1,6 @@
-const initialState = [];
+const initialState = {
+  torrents: []
+};
 
 const torrentsReducer = (state = initialState, action) => {
   console.log(state, action);

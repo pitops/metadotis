@@ -18,31 +18,62 @@ class TorrentStatus extends React.Component {
     buffer: 10,
     uploadSpeed: '0.00 Kb/s',
     downloadSpeed: '0.00 Kb/s',
-    progress: '0%'
+    progress: '0%',
+    name: ''
   };
+
+  constructor(props) {
+    super(props);
+  }
 
   componentWillMount() {
     // get torrent by using hash
-    const hash = '0b4188030fa2ae975f4c2a7f4cad6b1114b0c472';
+    const { hash } = this.props;
 
-    // this.timer = setInterval(() => {
-    //   (async () => {
-    //     const response = await this.getTorrent(hash);
-    //     this.setState({
-    //       uploadSpeed: response.data.status.upload,
-    //       downloadSpeed: response.data.status.download,
-    //       progress: response.data.status.progress
-    //     });
-    //
-    //     if (parseInt(this.state.progress) === 100) {
-    //       clearInterval(this.timer)
-    //     }
-    //   })();
-    // }, 1000);
+    this.timer = setInterval(() => {
+      (async () => {
+        const response = await this.getTorrent(hash);
+        this.setState({
+          uploadSpeed: response.data.torrent.status.upload,
+          downloadSpeed: response.data.torrent.status.download,
+          progress: response.data.torrent.status.progress,
+          name: this.extractName(response.data.torrent.files)
+        });
+
+        if (parseInt(this.state.progress) === 100) {
+          clearInterval(this.timer);
+        }
+      })();
+    }, 1000);
   }
 
   componentWillUnmount() {
     clearInterval(this.timer);
+  }
+
+  extractName(files) {
+    const keywords = [
+      '720p',
+      '1080p',
+      'BluRay',
+      'x264',
+      '-',
+      'YTS.AM',
+      '.mp4',
+      '[',
+      ']'
+    ];
+    let fileName = files.find(file => file.name.includes('.mp4'));
+
+    if (fileName) {
+      fileName = fileName.name;
+      keywords.forEach(keyword => {
+        fileName = fileName.replace(keyword, '');
+      });
+      return fileName.replace(/\./g, ' ');
+    }
+
+    return 'Cannot extract filename';
   }
 
   async getTorrent(hash) {
@@ -60,18 +91,20 @@ class TorrentStatus extends React.Component {
       const diff2 = Math.random() * 10;
       this.setState({
         completed: completed + diff,
-        buffer: completed + diff + diff2
+        buffer: completed + diff
       });
     }
   };
 
   render() {
     const { classes } = this.props;
-    const { progress, buffer, downloadSpeed, uploadSpeed } = this.state;
+    const { progress, name, buffer, downloadSpeed, uploadSpeed } = this.state;
 
     return (
       <div className={classes.root}>
-        <Typography variant="body2">Avengers 3 ({progress})</Typography>
+        <Typography variant="caption">
+          {name} ({progress})
+        </Typography>
         <LinearProgress
           color="secondary"
           variant="buffer"

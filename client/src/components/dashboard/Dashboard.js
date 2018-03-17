@@ -10,7 +10,7 @@ class Dashboard extends Component {
   };
 
   componentWillMount() {
-    const res = axios.get('api/search/torrents?q=robot&page=1');
+    // const res = axios.get('api/search/torrents?q=robot&page=1');
   }
 
   render() {
