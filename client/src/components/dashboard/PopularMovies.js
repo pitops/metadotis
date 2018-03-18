@@ -21,7 +21,9 @@ class PopularMovies extends React.Component {
     const height = 580;
     const width = 400;
 
-    const url = template.replace(/{width}/g, width).replace('{height}', height);
+    const url = template
+      .replace(/{width}/g, width)
+      .replace(/{height}/g, height);
 
     return url;
   }

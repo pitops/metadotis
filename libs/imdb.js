@@ -15,7 +15,7 @@ async function popular () {
           let year = $(this).find('.titleColumn .secondaryInfo').html().replace(/[()]/g, '')
           let title = $(this).find('.titleColumn a').html()
           let rating = $(this).find('.ratingColumn strong').html()
-          let poster = $(this).find('.posterColumn a img').attr('src')
+          let poster = $(this).find('.posterColumn a img').attr('src').replace(/^.*\.com/i, `/posters`)
 
           return {id, year, title, rating, poster}
         })
@@ -65,7 +65,7 @@ async function details (id) {
       let year = $('.title_wrapper h1 span').text().replace(/[\(\)]/g, '')
       let title = $('.title_wrapper h1').text().replace(/\(\d+\)\s+$/, '').trim()
       let rating = $('.ratingValue strong span').text()
-      let poster = $('.poster a img').attr('src')
+      let poster = $('.poster a img').attr('src').replace(/^.*\.com/i, `/posters`)
       let actors = $('.cast_list tr [itemprop="actor"] a span').toArray().map(item => $(item).text())
       let summary = $('.summary_text').text().trim()
       let writers = $('[itemprop="creator"] a span').toArray().map(item => $(item).text())

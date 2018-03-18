@@ -28,9 +28,15 @@ app.use(bodyParser.urlencoded({extended: true}))
 
 app.use('/', index)
 
-app.use((err, req, res) => {
+app.use((req, res, next) => {
+  let error = new Error('404: ' + req.path)
+  next(error)
+})
+
+app.use((err, req, res, next) => {
   console.info('error', err.message)
-  res.status(err.status || 500).json({message: err.message, code: err.code})
+  res.status(err.status || 500)
+  res.json({message: err.message, code: err.code})
 })
 
 app.listen(port, () => console.log(`Example app listening on port ${port}!`))

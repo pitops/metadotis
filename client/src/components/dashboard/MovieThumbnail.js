@@ -1,8 +1,10 @@
-import React from 'react';
 import Card from 'material-ui/Card/Card';
-import CardContent from 'material-ui/es/Card/CardContent';
+import React from 'react';
 import Button from 'material-ui/es/Button/Button';
 import withStyles from 'material-ui/es/styles/withStyles';
+import CardContent from 'material-ui/es/Card/CardContent';
+
+import classNames from './MovieThumbnail.scss';
 
 const styles = theme => ({
   button: {
@@ -12,16 +14,19 @@ const styles = theme => ({
 
 const MovieThumbnail = props => {
   const { poster, classes } = props;
+  const posterStyle = { backgroundImage: `url( ${poster} )` };
+
   return (
-    <React.Fragment>
-      <Card>
-        <CardContent>
-          <Button size="small" className={classes.button}>
-            <img src={poster} />
-          </Button>
-        </CardContent>
-      </Card>
-    </React.Fragment>
+    <Card>
+      <CardContent>
+        <Button size="small" className={classes.button}>
+          <div
+            className={classNames['movie-thumbnail-image']}
+            style={posterStyle}
+          />
+        </Button>
+      </CardContent>
+    </Card>
   );
 };
 
