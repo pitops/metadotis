@@ -7,6 +7,7 @@ import BandWidthStatus from '../shared/BandWidthStatus';
 import classNames from './TorrentStatus.scss';
 import { Link } from 'react-router-dom';
 import * as axios from 'axios';
+import * as mime from 'mime';
 
 const styles = {
   root: {
@@ -70,7 +71,13 @@ class TorrentStatus extends React.Component {
       '[',
       ']'
     ];
-    const file = files.find(file => file.name.includes('.mp4'));
+
+    const file = files.find(file => {
+      console.log(mime.getType(file.name));
+      return (
+        mime.getType(file.name).match(/video/) && !file.name.match(/sample/i)
+      );
+    });
 
     if (file) {
       let fileId = file.id;
