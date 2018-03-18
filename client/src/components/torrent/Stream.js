@@ -3,7 +3,8 @@ import { parse } from 'qs';
 import { findDOMNode } from 'react-dom';
 import screenfull from 'screenfull';
 import ReactPlayer from 'react-player';
-import classStyles from './Stream.scss';
+import classNames from './Stream.scss';
+import * as axios from 'axios';
 
 const styles = {
   top: 0,
@@ -24,7 +25,9 @@ class Stream extends React.Component {
     loaded: 0,
     duration: 0,
     playbackRate: 1.0,
-    loop: false
+    loop: false,
+    hash: '',
+    fileid: ''
   };
 
   constructor(props) {
@@ -44,7 +47,8 @@ class Stream extends React.Component {
     const params = parse(props.location.search.substr(1));
     setTimeout(() => {
       this.setState({
-        videoSrc: `/api/torrent/${params.hash}/${params.fileid}`
+        videoSrc: `/api/torrent/${params.hash}/${params.fileid}`,
+        ...params
       });
     }, 10);
   }
@@ -104,6 +108,18 @@ class Stream extends React.Component {
     screenfull.request(findDOMNode(this.player));
   };
 
+  onVlC = async () => {
+    try {
+      const res = await axios.post('api/vlc/play/', {
+        hash: this.state.hash,
+        fileId: this.state.fileid
+      });
+      this.setState({ playing: false });
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   ref = player => {
     this.player = player;
   };
@@ -123,7 +139,7 @@ class Stream extends React.Component {
     const SEPARATOR = ' · ';
 
     return (
-      <div className={classStyles.playerWrapper}>
+      <div className={classNames.playerWrapper}>
         {/*<video*/}
         {/*style={styles}*/}
         {/*autoPlay*/}
@@ -133,7 +149,7 @@ class Stream extends React.Component {
         {/*controls*/}
         {/*/>*/}
         <ReactPlayer
-          className={classStyles.reactPlayer}
+          className={classNames.reactPlayer}
           url={videoSrc}
           // controls={true}
           playing={playing}
@@ -175,6 +191,7 @@ class Stream extends React.Component {
                 <button onClick={this.setPlaybackRate} value={2}>
                   2
                 </button>
+                <button onClick={this.onVlC}>Open in VLC</button>
               </td>
             </tr>
             <tr>

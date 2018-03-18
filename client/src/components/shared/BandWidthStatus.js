@@ -6,7 +6,8 @@ import amber from 'material-ui/colors/amber';
 
 const styles = {
   root: {
-    color: amber[600]
+    color: amber[600],
+    minWidth: '65px'
   },
   icon: {
     margin: '3px'
