@@ -6,6 +6,7 @@ import Dashboard from '../dashboard/Dashboard';
 import Stream from '../torrent/Stream';
 import { Route } from 'react-router-dom';
 import Navbar from '../navbar/Navbar';
+import Switch from 'react-router-dom/es/Switch';
 
 class App extends Component {
   state = {
@@ -35,8 +36,10 @@ class App extends Component {
       <BrowserRouter>
         <div className={classes.main}>
           <Navbar />
-          <Route path="/stream" component={Stream} />
-          <Route path="/" exact component={Dashboard} />
+          <Switch>
+            <Route path="/" exact component={Dashboard} />
+            <Route path="/stream" component={Stream} />
+          </Switch>
         </div>
       </BrowserRouter>
     );

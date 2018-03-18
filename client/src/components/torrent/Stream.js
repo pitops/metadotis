@@ -11,13 +11,30 @@ const styles = {
 };
 
 class Stream extends React.Component {
+  state = {
+    videoSrc: ''
+  };
+
   constructor(props) {
     super(props);
+  }
+
+  componentWillMount() {
+    this.handleVideoSource(this.props);
+  }
+
+  componentWillReceiveProps(newProps) {
+    if (this.props.location.search === newProps.location.search) return;
+    this.handleVideoSource(newProps);
+  }
+
+  handleVideoSource(props) {
     const params = parse(props.location.search.substr(1));
-    this.state = {
-      videoSrc: `/api/torrent/${params.hash}/${params.fileid}`,
-      ...params
-    };
+    setTimeout(() => {
+      this.setState({
+        videoSrc: `/api/torrent/${params.hash}/${params.fileid}`
+      });
+    }, 10);
   }
 
   render() {

@@ -115,12 +115,15 @@ class TorrentStatus extends React.Component {
       downloadSpeed,
       uploadSpeed
     } = this.state;
-    const path = `/stream?hash=${hash}&fileid=${id}`;
+    const path = {
+      pathname: '/stream',
+      search: `?hash=${hash}&fileid=${id}`
+    };
 
     return (
       <div className={classes.root}>
         <Typography variant="body2">
-          <Link to={{ pathname: path }} className={classes.link}>
+          <Link to={path} className={classes.link}>
             {name}
           </Link>{' '}
           ({progress})
