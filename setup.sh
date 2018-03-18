@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 
-npm i
-cd client
-npm i
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+npm install
+cd ${DIR}/client
+
+npm install
+
+cd -
