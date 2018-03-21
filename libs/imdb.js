@@ -1,11 +1,63 @@
 const browser = require('./browser')
+const goToWait = 100
+const goToOptions = {waitLoad: true, waitNetworkIdle: true}
 
-async function popular () {
+async function searchMovies (query) {
+  return _search(query, 'feature')
+}
+
+function searchSeries (query) {
+  return _search(query, 'tv_series')
+}
+
+async function popularMovies () {
+  return await _popular('moviemeter')
+}
+
+async function popularSeries () {
+  return await _popular('tvmeter')
+}
+
+async function _search (query, type) {
+  let page = await browser.newPage()
+
+  await page.setViewport({width: 1024, height: 100000})
+  await page.goto(`http://www.imdb.com/search/title?title=${query}&title_type=${type}&view=simple`, goToOptions)
+  await page.waitFor(goToWait)
+
+  let movies = await page.evaluate(() => {
+    return $('.lister-list > .lister-item')
+      .map(function () {
+        let id = $(this).find('.lister-item-header a').attr('href').replace(/\/title\//i, '').replace(/\/.+/i, '')
+        let year = $(this).find('.lister-item-header .lister-item-year').text().replace(/[()]/g, '').trim()
+        let title = $(this).find('.lister-item-header a').text()
+        let rating = $(this).find('.col-imdb-rating strong').text().trim()
+        let poster = $(this).find('.lister-item-image a img').attr('src')
+
+        return {id, year, title, rating, poster}
+      })
+      .toArray()
+  })
+  page.close()
+
+  movies
+    .forEach(movie => {
+      movie.posterData = posterData(movie.poster)
+
+      if (movie.year.match(/–$/)) {
+        movie.year += 'present'
+      }
+    })
+
+  return movies
+}
+
+async function _popular (type) {
   let page = await  browser.newPage()
 
   await page.setViewport({width: 1024, height: 100000})
-  await page.goto('http://www.imdb.com/chart/moviemeter', {waitLoad: true, waitNetworkIdle: true})
-  await page.waitFor(100)
+  await page.goto('http://www.imdb.com/chart/' + type, goToOptions)
+  await page.waitFor(goToWait)
 
   let movies = await page
     .evaluate(() => {
@@ -21,32 +73,6 @@ async function popular () {
         })
         .toArray()
     })
-  await page.close()
-
-  movies.forEach(movie => movie.posterData = posterData(movie.poster))
-  return movies
-}
-
-async function search (query) {
-  let page = await browser.newPage()
-
-  await page.setViewport({width: 1024, height: 100000})
-  await page.goto('http://www.imdb.com/search/title?title=' + query, {waitLoad: true, waitNetworkIdle: true})
-  await page.waitFor(100)
-
-  let movies = await page.evaluate(() => {
-    return $('.lister-list > .lister-item')
-      .map(function () {
-        let id = $(this).find('.lister-item-header a').attr('href').replace(/\/title\//i, '').replace(/\/.+/i, '')
-        let year = $(this).find('.lister-item-header span').last().html().replace(/[()]/g, '')
-        let title = $(this).find('.lister-item-header a').html()
-        let rating = $(this).find('.ratings-imdb-rating strong').html()
-        let poster = $(this).find('.lister-item-image a img').attr('src')
-
-        return {id, year, title, rating, poster}
-      })
-      .toArray()
-  })
   page.close()
 
   movies.forEach(movie => movie.posterData = posterData(movie.poster))
@@ -57,8 +83,8 @@ async function details (id) {
   let page = await browser.newPage()
   await page.setViewport({width: 1024, height: 1024})
 
-  await page.goto('https://www.imdb.com/title/' + id, {waitLoad: true, waitNetworkIdle: true})
-  await page.waitFor(100)
+  await page.goto('https://www.imdb.com/title/' + id, goToOptions)
+  await page.waitFor(goToWait)
 
   let details = await page
     .evaluate(() => {
@@ -104,4 +130,4 @@ function posterData (poster) {
   return {width, height, template}
 }
 
-module.exports = {popular, search, details}
+module.exports = {searchMovies, searchSeries, popularMovies, popularSeries, details}

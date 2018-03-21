@@ -21,6 +21,11 @@ describe('server api', () => {
     expect(response.data.movies.length).toEqual(100)
   }, 60 * 1000)
 
+  test('get most popular series', async () => {
+    let response = await axios.get('http://localhost:3333/api/series/popular')
+    expect(response.data.movies.length).toEqual(100)
+  }, 60 * 1000)
+
   test('get movie details', async () => {
     let response = await axios.get('http://localhost:3333/api/movie/tt3371366')
     expect(response.data.movie).toBeTruthy()
@@ -28,6 +33,11 @@ describe('server api', () => {
 
   test('search movies', async () => {
     let response = await axios.get('http://localhost:3333/api/search/movies?q=robot')
+    expect(response.data.movies.length).toEqual(50)
+  }, 60 * 1000)
+
+  test('search series', async () => {
+    let response = await axios.get('http://localhost:3333/api/search/series?q=robot')
     expect(response.data.movies.length).toEqual(50)
   }, 60 * 1000)
 

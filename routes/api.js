@@ -28,13 +28,24 @@ router.get('/movie/:id', async (req, res) => {
 })
 
 router.get('/movies/popular', async (req, res) => {
-  let movies = await imdb.popular()
+  let movies = await imdb.popularMovies()
+  res.json({movies})
+})
+
+router.get('/series/popular', async (req, res) => {
+  let movies = await imdb.popularSeries()
   res.json({movies})
 })
 
 router.get('/search/movies', async (req, res) => {
   let q = req.query.q
-  let movies = await imdb.search(q)
+  let movies = await imdb.searchMovies(q)
+  res.json({movies})
+})
+
+router.get('/search/series', async (req, res) => {
+  let q = req.query.q
+  let movies = await imdb.searchSeries(q)
   res.json({movies})
 })
 

@@ -1,6 +1,6 @@
 let database = require('./database')
 
-describe('database', () => {
+describe.skip('database', () => {
   test('set string', async () => {
     await database.set('somekey', 'somevalue')
     let value = await database.get('somekey')
