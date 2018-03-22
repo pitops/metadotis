@@ -21,10 +21,16 @@ router.post('/vlc/play', async (req, res) => {
   res.json({status: 'OK'})
 })
 
-router.get('/movie/:id', async (req, res) => {
+router.get('/details/:id', async (req, res) => {
   let id = req.params.id
   let details = await imdb.details(id)
-  res.json({movie: details})
+  res.json({details: details})
+})
+
+router.get('/seasons/:id', async (req, res) => {
+  let id = req.params.id
+  let seasons = await imdb.seasons(id)
+  res.json({seasons})
 })
 
 router.get('/movies/popular', async (req, res) => {

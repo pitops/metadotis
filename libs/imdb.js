@@ -3,11 +3,11 @@ const goToWait = 100
 const goToOptions = {waitLoad: true, waitNetworkIdle: true}
 
 async function searchMovies (query) {
-  return _search(query, 'feature')
+  return await _search(query, 'feature')
 }
 
-function searchSeries (query) {
-  return _search(query, 'tv_series')
+async function searchSeries (query) {
+  return await _search(query, 'tv_series')
 }
 
 async function popularMovies () {
@@ -16,6 +16,82 @@ async function popularMovies () {
 
 async function popularSeries () {
   return await _popular('tvmeter')
+}
+
+async function details (id) {
+  let page = await browser.newPage()
+  await page.setViewport({width: 1024, height: 1024})
+
+  await page.goto('https://www.imdb.com/title/' + id, goToOptions)
+  await page.waitFor(goToWait)
+
+  let details = await page
+    .evaluate(() => {
+      let year = $('.title_wrapper h1 span').text().replace(/[\(\)]/g, '')
+      let title = $('.title_wrapper h1').text().replace(/\(\d+\)\s+$/, '').trim()
+      let rating = $('.ratingValue strong span').text()
+      let poster = $('.poster a img').attr('src').replace(/^.*\.com/i, `/posters`)
+      let actors = $('.cast_list tr [itemprop="actor"] a span').toArray().map(item => $(item).text())
+      let summary = $('.summary_text').text().trim()
+      let writers = $('[itemprop="creator"] a span').toArray().map(item => $(item).text())
+      let director = $('[itemprop="director"] a span').toArray().map(item => $(item).text())
+
+      return {year, title, rating, poster, actors, summary, writers, director}
+    })
+  page.close()
+
+  details.id = id
+  details.posterData = posterData(details.poster)
+
+  return details
+}
+
+async function season (id, index) {
+  let page = await browser.newPage()
+  await page.setViewport({width: 1024, height: 100000})
+  await page.goto(`https://www.imdb.com/title/${id}/episodes${index ? '?season=' + index : ''}`, goToOptions)
+  await page.waitFor(goToWait)
+
+  let season = await page
+    .evaluate(() => {
+
+      let episodes = $('.list.detail > .list_item')
+        .map(function () {
+          let id = $(this).find('.info strong a').attr('href').replace(/\/title\//i, '').replace(/\/.+/i, '')
+          let title = $(this).find('.info strong a').html()
+          let rating = $(this).find('.info >div > div span.ipl-rating-star__rating').html().trim()
+          let poster = $(this).find('.image img').attr('src')
+
+          return {id, title, rating, poster}
+        })
+        .toArray()
+
+      let season = parseInt($('#bySeason option:selected').text())
+
+      return {season, episodes}
+    })
+  page.close()
+
+  season.episodes
+    .forEach(episode => {
+      episode.posterData = posterData(episode.poster)
+    })
+
+  return season
+}
+
+async function seasons (id) {
+  let last = await season(id)
+  let indexes = []
+
+  for (let i = 1; i < last.season; i++) {
+    indexes.push(i)
+  }
+
+  let seasons = await Promise.all(indexes.map(async index => await season(id, index)))
+  seasons.push(last)
+
+  return seasons
 }
 
 async function _search (query, type) {
@@ -79,34 +155,6 @@ async function _popular (type) {
   return movies
 }
 
-async function details (id) {
-  let page = await browser.newPage()
-  await page.setViewport({width: 1024, height: 1024})
-
-  await page.goto('https://www.imdb.com/title/' + id, goToOptions)
-  await page.waitFor(goToWait)
-
-  let details = await page
-    .evaluate(() => {
-      let year = $('.title_wrapper h1 span').text().replace(/[\(\)]/g, '')
-      let title = $('.title_wrapper h1').text().replace(/\(\d+\)\s+$/, '').trim()
-      let rating = $('.ratingValue strong span').text()
-      let poster = $('.poster a img').attr('src').replace(/^.*\.com/i, `/posters`)
-      let actors = $('.cast_list tr [itemprop="actor"] a span').toArray().map(item => $(item).text())
-      let summary = $('.summary_text').text().trim()
-      let writers = $('[itemprop="creator"] a span').toArray().map(item => $(item).text())
-      let director = $('[itemprop="director"] a span').toArray().map(item => $(item).text())
-
-      return {year, title, rating, poster, actors, summary, writers, director}
-    })
-  page.close()
-
-  details.id = id
-  details.posterData = posterData(details.poster)
-
-  return details
-}
-
 function posterData (poster) {
   if (!poster) {
     return {width: 67, height: 98, template: 'https://images-na.ssl-images-amazon.com/images/G/01/imdb/images/nopicture/67x98/film-2500266839._CB514893543_.png'}
@@ -130,4 +178,4 @@ function posterData (poster) {
   return {width, height, template}
 }
 
-module.exports = {searchMovies, searchSeries, popularMovies, popularSeries, details}
+module.exports = {searchMovies, searchSeries, popularMovies, popularSeries, details, season, seasons}
