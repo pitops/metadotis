@@ -1,5 +1,7 @@
 # metadotis
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/pitops/metadotis.svg)](https://greenkeeper.io/)
+
 enter description
 
 ### Setup
