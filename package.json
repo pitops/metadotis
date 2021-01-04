@@ -12,7 +12,7 @@
   "license": "MIT",
   "dependencies": {
     "async": "^2.6.0",
-    "axios": "^0.17.1",
+    "axios": "^0.21.1",
     "body-parser": "^1.18.2",
     "bytes": "^3.0.0",
     "cheerio": "^1.0.0-rc.2",
